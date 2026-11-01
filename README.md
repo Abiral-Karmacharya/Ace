@@ -6,6 +6,8 @@ It combines a React dashboard, a Node.js backend, and a Go-based process manager
 
 ACE began as a personal solution for managing multiple software projects and their associated tools, processes, and configurations.
 
+*ACE contains many moving parts which are yet to publish.*
+
 ## Overview
 
 ACE provides a centralized interface for working with projects across different languages and runtimes.
