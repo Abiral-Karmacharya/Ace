@@ -1,5 +1,6 @@
 # Dependencies (React + Node)
-node_modules/
+react/node_modules
+node/node_modules
 
 # React / Vite build output
 dist/
@@ -48,3 +49,5 @@ temp/
 node/marshal/marshal
 .test-tmp/
 .go-cache/
+
+node/marshal/logs/*
