@@ -131,15 +131,42 @@ func (a *app) command(root, entry, language string) (*exec.Cmd, error) {
 	}
 	var args []string
 	if language == "react" {
-		vite, e := entryPath(root, "node_modules/.bin/vite")
-		if e != nil {
+		var pkg struct {
+			Dependencies    map[string]string `json:"dependencies"`
+			DevDependencies map[string]string `json:"devDependencies"`
+		}
+		pkgPath, e := entryPath(root, "package.json")
+		if e != nil && !errors.Is(e, os.ErrNotExist) {
 			return nil, e
 		}
-		cfg, e := entryPath(root, "vite.config.js")
-		if e != nil {
-			return nil, e
+		if e == nil {
+			data, e := os.ReadFile(pkgPath)
+			if e != nil {
+				return nil, e
+			}
+			if e := json.Unmarshal(data, &pkg); e != nil {
+				return nil, fmt.Errorf("parse package.json: %w", e)
+			}
 		}
-		args = []string{vite, "--config", cfg}
+		_, nextDependency := pkg.Dependencies["next"]
+		_, nextDevDependency := pkg.DevDependencies["next"]
+		if nextDependency || nextDevDependency {
+			next, e := entryPath(root, "node_modules/.bin/next")
+			if e != nil {
+				return nil, e
+			}
+			args = []string{next, "dev"}
+		} else {
+			vite, e := entryPath(root, "node_modules/.bin/vite")
+			if e != nil {
+				return nil, e
+			}
+			cfg, e := entryPath(root, "vite.config.js")
+			if e != nil {
+				return nil, e
+			}
+			args = []string{vite, "--config", cfg}
+		}
 	} else {
 		entry, e = entryPath(root, entry)
 		if e != nil {
@@ -164,13 +191,13 @@ func (a *app) start(id int, cmd *exec.Cmd) (*managedProcess, error) {
 	if len(a.registry.procs) >= a.config.Process.MaxRunning {
 		return nil, fmt.Errorf("maximum running processes reached")
 	}
-	var f *rotatingWriter
+	var f *os.File
 	cmd.WaitDelay = time.Second
 	cmd.Stdout = io.Discard
 	cmd.Stderr = io.Discard
 	if a.config.Logging.Enabled {
 		var e error
-		f, e = newWriter(a.config.Logging, fmt.Sprintf("project_%d-%d.log", id, time.Now().UnixNano()))
+		f, e = newProjectLog(id)
 		if e != nil {
 			return nil, e
 		}

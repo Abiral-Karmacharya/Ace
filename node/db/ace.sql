@@ -58,5 +58,5 @@ CREATE TABLE IF NOT EXISTS archive (
     FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE
 );
 
-
-INSERT INTO enum_theme_family (theme) VALUES ('root'), ('court'), ('midas'), ('eclipse'), ('ambassador');
+INSERT OR IGNORE INTO enum_theme_family (theme)
+VALUES ('root'), ('court'), ('midas'), ('eclipse'), ('ambassador');

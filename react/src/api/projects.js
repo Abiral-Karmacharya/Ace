@@ -168,7 +168,7 @@ export async function getStatus(projectId) {
   }
 }
 export function streamLogs(projectId, onLine, onError) {
-  const es = new EventSource(`http://localhost:3178/api/logs/${projectId}`);
+  const es = new EventSource(`${import.meta.env.VITE_API_LINK}/api/logs/${projectId}`);
 
   es.onmessage = (event) => {
     onLine(event.data);

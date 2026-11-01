@@ -313,18 +313,20 @@ async function launchProject(req, res) {
 }
 
 async function stopProject(req, res) {
-  if (process.env.HARBINGER) {
-  const executablePath = process.env.HARBINGER_BIN;
-  execFile(executablePath, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Execution error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-    }
-    console.log(`Executable output:\n${stdout}`);
-  });
+  console.log(process.env.HARBINGER)
+  if (process.env.HARBINGER != "false") {
+    const executablePath = process.env.HARBINGER_BIN;
+    console.log(executablePath)
+    execFile(executablePath, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Execution error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Stderr: ${stderr}`);
+      }
+      console.log(`Executable output:\n${stdout}`);
+    });
   }
   return await system(req, res, "http://localhost:9000/kill", {
     method: "POST",

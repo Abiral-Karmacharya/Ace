@@ -17,6 +17,15 @@ type rotatingWriter struct {
 	size, limit int64
 }
 
+// Marshal is launched from node/marshal; the Node controller reads this directory.
+// Keep project output append-only so streamLogs can follow a stable file and offset.
+func newProjectLog(id int) (*os.File, error) {
+	if e := os.MkdirAll("logs", 0700); e != nil {
+		return nil, e
+	}
+	return os.OpenFile(filepath.Join("logs", fmt.Sprintf("project_%d.log", id)), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+}
+
 func newWriter(c LoggingConfig, name string) (*rotatingWriter, error) {
 	p := filepath.Join(c.Directory, name)
 	f, e := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
