@@ -1,0 +1,33 @@
+# Copy manually to $XDG_CONFIG_HOME/ace/marshal.toml (default ~/.config/ace).
+# Never run Marshal as root. This local API executes project code.
+[server]
+host = "127.0.0.1"
+port = 9000
+
+[logging]
+# false disables category logs AND project stdout/stderr persistence.
+enabled = true
+directory = "~/.local/state/ace/marshal"
+level = "info" # debug, info, warn, error
+# Each session uses new files; rotation creates new numbered segments.
+max_size_mb = 10
+
+[editors]
+default = "zeditor"
+[editors.by_language]
+react = "code"
+python-gui = "code"
+go = "zeditor"
+
+# Executable names resolved through PATH, or absolute executable paths.
+# Arguments and shell expressions are not supported.
+[runtimes]
+python = "python3"
+node = "nodemon"
+go = "go"
+bash = "bash"
+react = "node"
+
+[process]
+graceful_shutdown_seconds = 5
+max_running = 10
